@@ -33,21 +33,21 @@ While multi-agent automation can save millions in operational overhead, **no Aus
 
 ```mermaid
 flowchart TD
-    A([📩 Incoming Dispute Ticket / Email]) --> B[1. Triager Agent<br/><i>Pydantic v2 Parsing & Intent Extraction</i>]
-    B --> C[2. Forensics Agent<br/><i>Stripe, AusPost & Core DB Integration</i>]
-    C --> D[3. Risk & Policy Agent<br/><i>Dispute Policy Matrix & Scoring</i>]
+    A(["📩 Incoming Dispute Ticket / Email"]) --> B["1. Triager Agent<br/>Pydantic v2 Parsing & Intent Extraction"]
+    B --> C["2. Forensics Agent<br/>Stripe, AusPost & Core DB Integration"]
+    C --> D["3. Risk & Policy Agent<br/>Dispute Policy Matrix & Scoring"]
     
-    D --> E{Is Refund > AUD $100<br/>OR High Risk?}
+    D --> E{"Is Refund > AUD $100<br/>OR High Risk?"}
     
-    E -- YES --> F[⏸️ <b>LangGraph Checkpointer Interrupt</b><br/><i>State Persisted to PostgreSQL</i>]
-    F --> G[💬 Interactive Slack Block Kit Card<br/><i>Sent to #ops-approvals</i>]
-    G --> H([👤 Operations Manager Review<br/>Approve | Reject | Modify])
-    H --> I[⚡ FastAPI Webhook Listener<br/><i>graph.update_state and resume</i>]
-    I --> J[5. Settlement Agent<br/><i>Executes Stripe Refund & DB Ledger Update</i>]
+    E -->|"YES (Requires Approval)"| F["⏸️ LangGraph Checkpointer Interrupt<br/>State Persisted to PostgreSQL"]
+    F --> G["💬 Interactive Slack Block Kit Card<br/>Sent to #ops-approvals"]
+    G --> H(["👤 Operations Manager Review<br/>Approve | Reject | Modify"])
+    H --> I["⚡ FastAPI Webhook Listener<br/>graph.update_state and resume"]
+    I --> J["5. Settlement Agent<br/>Executes Stripe Refund & DB Ledger Update"]
     
-    E -- NO (Safe Auto-Policy) --> J
+    E -->|"NO (Safe Auto-Policy)"| J
     
-    J --> K([📤 Customer Communication & Ticket Resolution])
+    J --> K(["📤 Customer Communication & Ticket Resolution"])
 
     classDef agent fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff;
     classDef hitl fill:#7c2d12,stroke:#f97316,stroke-width:2px,color:#fff;
